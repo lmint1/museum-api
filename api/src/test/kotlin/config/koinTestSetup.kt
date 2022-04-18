@@ -13,12 +13,4 @@ private val testModule = module {
 }
 
 // You can set your environment variables here
-private val environment = Environment(
-    apikey = TODO("define your apikey"),
-    baseUrl = TODO("define your baseUrl"),
-    isDebug = TODO("define your isDebug"),
-    dbHost = TODO("define your dbHost"),
-    dbUserName = TODO("define your dbUserName"),
-    dbPassword = TODO("define your dbPassword"),
-    secret = TODO("define your secret"),
-)
+private val environment = Environment()
