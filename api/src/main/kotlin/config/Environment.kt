@@ -15,9 +15,9 @@ data class Environment(
 
     init {
         val dbUri = URI(dbHost)
-        dbUserName = dbUri.userInfo.split(":")[0]
-        dbPassword = dbUri.userInfo.split(":")[1]
-        dbHost = "jdbc:postgresql://" + dbUri.host + ':' + dbUri.port + dbUri.path.toString() + "?sslmode=require"
+        dbUserName = dbUri.userInfo.split(":".toRegex()).toTypedArray()[0]
+        dbPassword = dbUri.userInfo.split(":".toRegex()).toTypedArray()[1]
+        dbHost = "jdbc:pgsql://" + dbUri.host + ':' + dbUri.port + dbUri.path
     }
 
 }

@@ -4,8 +4,14 @@ import config.koinSetup
 import dto.PieceItem
 import entity.Piece
 import entity.User
+import infrastructure.database.Passwords
+import infrastructure.database.Pieces
+import infrastructure.database.Users
+import org.jetbrains.exposed.sql.SchemaUtils
+import org.jetbrains.exposed.sql.transactions.transaction
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.koin.test.KoinTest
@@ -21,6 +27,11 @@ class UserRepositoryImplTest: KoinTest {
 
     @get:Rule
     val koinTestRule = KoinTestRule.create(koinSetup)
+
+    @Before
+    fun setup() {
+        transaction { SchemaUtils.create (Users, Passwords, Pieces) }
+    }
 
     @Test
     fun test() {
