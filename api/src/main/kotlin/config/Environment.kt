@@ -11,6 +11,7 @@ data class Environment(
     var dbUserName: String = getenvOrNull("DATABASE_USER") ?: "",
     var dbPassword: String = getenvOrNull("DATABASE_PASSWORD") ?: "",
     val secret: String = System.getenv("SECRET"),
+    val port: Int = getenvOrNull("PORT")?.toIntOrNull() ?: 7070,
 ) {
 
     init {

@@ -1,3 +1,4 @@
+import config.Environment
 import config.apiModule
 import config.useCaseModule
 import controllers.addPieceController
@@ -9,13 +10,10 @@ import io.javalin.Javalin
 import io.javalin.core.JavalinConfig
 import io.javalin.plugin.openapi.OpenApiOptions
 import io.javalin.plugin.openapi.OpenApiPlugin
-import io.javalin.plugin.openapi.dsl.document
-import io.javalin.plugin.openapi.dsl.documented
 import io.javalin.plugin.openapi.ui.SwaggerOptions
 import io.swagger.v3.oas.models.Components
 import io.swagger.v3.oas.models.OpenAPI
 import io.swagger.v3.oas.models.info.Info
-import io.swagger.v3.oas.models.security.SecurityRequirement
 import io.swagger.v3.oas.models.security.SecurityScheme
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -29,12 +27,13 @@ fun main() {
     val modules = listOf(apiModule, useCaseModule)
     val koin = startKoin { loadKoinModules(modules) }.koin
     transaction { SchemaUtils.create (Users, Passwords, Pieces) }
-    startApp(7070, koin)
+    startApp(koin)
 }
 
-fun startApp(port: Int, koin: Koin) = with(koin) {
+fun startApp(koin: Koin) = with(koin) {
     // Configuring controllers passing the services
-    Javalin.create { setup(it, get()) }.start(port)
+    val env = get<Environment>()
+    Javalin.create { setup(it, get()) }.start(env.port)
         .addUserController(get())
         .addPieceController(get())
 }
