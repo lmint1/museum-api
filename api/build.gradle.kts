@@ -9,12 +9,15 @@ import Build_gradle.Versions.slf4j
 import Build_gradle.Versions.springSecurity
 import Build_gradle.Versions.upsert
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.gradle.jvm.tasks.Jar
 
 plugins {
+    application
     kotlin("jvm") version "1.6.10"
     kotlin("plugin.serialization") version "1.6.10"
-    `java-library`
 }
+
+application { mainClass.set("MainKt") }
 
 group = "me.leandro"
 version = "1.0-SNAPSHOT"
@@ -85,13 +88,24 @@ tasks.withType<KotlinCompile>() {
     kotlinOptions.jvmTarget = "1.8"
 }
 
-val jar by tasks.getting(Jar::class) {
-    manifest {
-        attributes["Main-Class"] = "MainKt"
+tasks {
+    test {
+        testLogging {
+            events("failed", "passed", "started")
+        }
     }
-}
-
-java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    val fatJar = register<Jar>("fatJar") {
+        dependsOn.addAll(listOf("compileJava", "compileKotlin", "processResources"))
+        archiveClassifier.set("standalone")
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+        manifest { attributes(mapOf("Main-Class" to application.mainClass)) }
+        val sourcesMain = sourceSets.main.get()
+        val contents = configurations.runtimeClasspath.get()
+            .map { if (it.isDirectory) it else zipTree(it) } +
+                sourcesMain.output
+        from(contents)
+    }
+    build {
+        dependsOn(fatJar)
+    }
 }
